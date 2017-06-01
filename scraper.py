@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 
 
-@sched.scheduled_job('interval', minutes=1)
+@sched.scheduled_job('interval', minutes=60)
 def scrape():
     states = {
        'TRG': 'Terengganu',
@@ -56,8 +56,8 @@ def scrape():
                 db.session.commit()
 
 
-@sched.scheduled_job('interval', minutes=6)
-#@sched.scheduled_job('cron', day_of_week='sun', hour=23)
+
+@sched.scheduled_job('cron', day_of_week='sun', hour=23)
 def cleanup():
     with app.app_context():
         db.init_app(app)
@@ -65,6 +65,5 @@ def cleanup():
         datas_ = InfoBanjir.get_all()
         for data_ in datas_:
             db.session.delete(data_)
-        db.engine.execute('TRUNCATE TABLE infobanjir_ RESTART IDENTITY')
         db.session.commit()
 sched.start()
