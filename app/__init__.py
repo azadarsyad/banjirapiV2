@@ -21,7 +21,7 @@ def create_app():
     from app.models import InfoBanjir
     app = Flask(__name__)
     app.config['DEBUG'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hazasxpfrsxmio:48604166211dca32b6a10afb48c6bb87a8f750265d588a1d4173e25539251efa@ec2-23-23-234-118.compute-1.amazonaws.com:5432/d5832l2rq92ogc'
     db.init_app(app)
 
     @app.route('/<string:state>', methods=['GET'])
