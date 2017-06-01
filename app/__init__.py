@@ -2,8 +2,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, jsonify, abort, Blueprint
 from flask import Flask, render_template, redirect, url_for, request, session, flash
-# local import
-from instance.config import app_config
 # initialize sql-alchemy
 db = SQLAlchemy()
 info = Blueprint('info', __name__)
