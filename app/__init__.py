@@ -50,7 +50,7 @@ def create_app():
                 results.append(obj.copy())
         else:
             querystring['state'] = state
-            infobanjir_ = InfoBanjir.get_all()
+            infobanjir_ = InfoBanjir.query.filter_by(state=state).all()
             results = []
             for info_ in infobanjir_:
                 obj = {
