@@ -3,14 +3,14 @@ import requests
 from flask import jsonify, Flask
 from app.models import InfoBanjir
 from apscheduler.schedulers.blocking import BlockingScheduler
-from app import create_app, db, POSTGRES
+from app import create_app, db
 import datetime
 import dateutil.parser
 
 sched = BlockingScheduler()
 create_app().app_context().push()
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hazasxpfrsxmio:48604166211dca32b6a10afb48c6bb87a8f750265d588a1d4173e25539251efa@ec2-23-23-234-118.compute-1.amazonaws.com:5432/d5832l2rq92ogc'
 
 
 @sched.scheduled_job('interval', minutes=60)
@@ -54,7 +54,6 @@ def scrape():
                 infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state)
                 db.session.add(infobanjir)
                 db.session.commit()
-
 
 
 @sched.scheduled_job('cron', day_of_week='sun', hour=23)
