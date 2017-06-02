@@ -54,7 +54,7 @@ def scrape():
                 infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state)
                 db.session.add(infobanjir)
                 db.session.commit()
-            db.close()
+            #db.close()
 
 
 @sched.scheduled_job('cron', day_of_week='mon-sun', hour=0)
