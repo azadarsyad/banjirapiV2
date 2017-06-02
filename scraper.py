@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hazasxpfrsxmio:48604166211dca32b6a10afb48c6bb87a8f750265d588a1d4173e25539251efa@ec2-23-23-234-118.compute-1.amazonaws.com:5432/d5832l2rq92ogc'
 
 
-@sched.scheduled_job('interval', minutes=60)
+@sched.scheduled_job('interval', minutes=1)
 def scrape():
     states = {
        'TRG': 'Terengganu',
@@ -54,6 +54,12 @@ def scrape():
                 infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state)
                 db.session.add(infobanjir)
                 db.session.commit()
+        db.close()
+
+
+@sched.scheduled_job('cron', day_of_week='mon-sun', hour=0)
+def scrape2():
+    scrape()
 
 
 @sched.scheduled_job('cron', day_of_week='sun', hour=23)
