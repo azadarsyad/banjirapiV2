@@ -24,6 +24,7 @@ python-dateutil==2.6.0
 python-editor==1.0.3
 pytz==2017.2
 requests==2.17.3
+schedule==0.4.2
 six==1.10.0
 SQLAlchemy==1.1.10
 tzlocal==1.4
