@@ -7,6 +7,7 @@ from app import create_app, db
 import datetime
 import dateutil.parser
 from flask_cors import CORS, cross_origin
+import pytz
 
 sched = BlockingScheduler()
 create_app().app_context().push()
@@ -15,7 +16,8 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hazasxpfrsxmio:48604166211dca32b6a10afb48c6bb87a8f750265d588a1d4173e25539251efa@ec2-23-23-234-118.compute-1.amazonaws.com:5432/d5832l2rq92ogc'
 
 
-@sched.scheduled_job('interval', minutes=1)
+
+@sched.scheduled_job('interval', hours=1)
 def scrape():
     states = {
        'TRG': 'Terengganu',
@@ -51,12 +53,14 @@ def scrape():
                 date_format = "%d-%m-%Y"
                 time_format = "%H:%M:%S"
                 last_update = dateutil.parser.parse(last_update)
+                tz = pytz.timezone('Asia/Kuala_Lumpur')
+                cdate = datetime.datetime.now(tz)
                 date = datetime.datetime.strftime(last_update, date_format)
-                time = datetime.datetime.strftime(last_update, time_format)
+                time = datetime.datetime.strftime(cdate, time_format)
+                print("time>>>", time)
                 infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state)
                 db.session.add(infobanjir)
                 db.session.commit()
-            #db.close()
 
 
 @sched.scheduled_job('cron', day_of_week='mon-sun', hour=0)
