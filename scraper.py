@@ -67,6 +67,12 @@ def scrape2():
     scrape()
 
 
+def pingreq():
+    purl = "http://www.kejutsahur.com/customerlist"
+    req = requests.get(purl)
+    print("req>>>", req)
+
+
 def cleanup():
     with app.app_context():
         db.init_app(app)
@@ -77,6 +83,7 @@ def cleanup():
         db.session.commit()
 
 schedule.every(1).hour.do(scrape)
+schedule.every(15).minutes.do(pingreq)
 schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
 
