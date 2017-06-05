@@ -8,6 +8,8 @@ import datetime
 import dateutil.parser
 from flask_cors import CORS, cross_origin
 import pytz
+import schedule
+import time
 
 
 create_app().app_context().push()
@@ -74,8 +76,15 @@ def cleanup():
             db.session.delete(data_)
         db.session.commit()
 
-sched = BlockingScheduler()
-sched.add_job(scrape, 'interval', hours=1)
-sched.add_job(scrape2, 'cron', day_of_week='mon-sun', hour=0)
-sched.add_job(cleanup, 'cron', day_of_week='sun', hour=23)
-sched.start()
+schedule.every(1).hour.do(scrape)
+schedule.every().day.at("00:00").do(scrape2)
+schedule.every().sunday.at("23:59").do(cleanup)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+#sched = BlockingScheduler()
+#sched.add_job(scrape, 'interval', hours=1)
+#sched.add_job(scrape2, 'cron', day_of_week='mon-sun', hour=0)
+#sched.add_job(cleanup, 'cron', day_of_week='sun', hour=23)
+#sched.start()
