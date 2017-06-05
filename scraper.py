@@ -9,15 +9,13 @@ import dateutil.parser
 from flask_cors import CORS, cross_origin
 import pytz
 
-sched = BlockingScheduler()
+
 create_app().app_context().push()
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hazasxpfrsxmio:48604166211dca32b6a10afb48c6bb87a8f750265d588a1d4173e25539251efa@ec2-23-23-234-118.compute-1.amazonaws.com:5432/d5832l2rq92ogc'
 
 
-
-@sched.scheduled_job('interval', hours=1)
 def scrape():
     states = {
        'TRG': 'Terengganu',
@@ -63,12 +61,10 @@ def scrape():
                 db.session.commit()
 
 
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=0)
 def scrape2():
     scrape()
 
 
-@sched.scheduled_job('cron', day_of_week='sun', hour=23)
 def cleanup():
     with app.app_context():
         db.init_app(app)
@@ -77,4 +73,9 @@ def cleanup():
         for data_ in datas_:
             db.session.delete(data_)
         db.session.commit()
+
+sched = BlockingScheduler()
+sched.add_job(scrape, 'interval', hours=1)
+sched.add_job(scrape2, 'cron', day_of_week='mon-sun', hour=0)
+sched.add_job(cleanup, 'cron', day_of_week='sun', hour=23)
 sched.start()
