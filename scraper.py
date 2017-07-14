@@ -10,6 +10,8 @@ from flask_cors import CORS, cross_origin
 import pytz
 import schedule
 import time
+import math
+from app.models import InfoBanjir
 
 
 create_app().app_context().push()
@@ -40,10 +42,34 @@ def scrape():
             date = datetime.datetime.strftime(last_update, date_format)
             time = datetime.datetime.strftime(ctime, time_format)
             state = 'Kelantan'
+            forecasted = None
             print("time>>>", time)
-            infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state)
+            infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, forecasted)
             db.session.add(infobanjir)
             db.session.commit()
+            
+    forecast()
+
+
+def forecast():
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+        time_format = "%H:00"
+        date_format = "%-d-%-m-%Y"
+        tz = pytz.timezone('Asia/Kuala_Lumpur')
+        ctime = datetime.datetime.now(tz)
+        time = datetime.datetime.strftime(ctime, time_format)
+        date = datetime.datetime.strftime(ctime, date_format)
+        tualang_ = InfoBanjir.query.filter_by(station_name="Sg.Lebir di Tualang", time=time, date=date).all()
+        dabong_ = InfoBanjir.query.filter_by(station_name="Sg.Galas di Dabong", time=time, date=date).all()
+        kkrai_ = InfoBanjir.query.filter_by(station_name="Sg.Kelantan di Kuala Krai", time=time, date=date).all()
+        tualang = tualang_.water_level
+        dabong = dabong_.water_level
+        calculated = 0.895*(math.pow(tualang, 0.490348)*math.pow(dabong, 0.458358))
+        kkrai_.forecasted = calculated
+        db.session.commit()
+        print(kkrai_.forecasted)
 
 
 def scrape2():
