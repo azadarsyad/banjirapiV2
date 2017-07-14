@@ -47,7 +47,7 @@ def scrape():
             infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, forecasted)
             db.session.add(infobanjir)
             db.session.commit()
-            
+
     forecast()
 
 
@@ -64,8 +64,10 @@ def forecast():
         tualang_ = InfoBanjir.query.filter_by(station_name="Sg.Lebir di Tualang", time=time, date=date).all()
         dabong_ = InfoBanjir.query.filter_by(station_name="Sg.Galas di Dabong", time=time, date=date).all()
         kkrai_ = InfoBanjir.query.filter_by(station_name="Sg.Kelantan di Kuala Krai", time=time, date=date).all()
-        tualang = tualang_.water_level
-        dabong = dabong_.water_level
+        tualang = float(tualang_.water_level)
+        dabong = float(dabong_.water_level)
+        print(tualang)
+        print(dabong)
         calculated = 0.895*(math.pow(tualang, 0.490348)*math.pow(dabong, 0.458358))
         kkrai_.forecasted = calculated
         db.session.commit()
