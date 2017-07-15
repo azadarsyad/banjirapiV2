@@ -42,7 +42,7 @@ def scrape():
             date = datetime.datetime.strftime(last_update, date_format)
             time = datetime.datetime.strftime(ctime, time_format)
             state = 'Kelantan'
-            forecasted = None
+            forecasted = "Null"
             print("time>>>", time)
             infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, forecasted)
             db.session.add(infobanjir)
