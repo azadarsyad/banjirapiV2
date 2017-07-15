@@ -62,7 +62,7 @@ def forecast():
         time = datetime.datetime.strftime(ctime, time_format)
         date = datetime.datetime.strftime(ctime, date_format)
         tualang_ = InfoBanjir.query.filter_by(station_name="Sg.Lebir di Tualang", time=time, date=date).all()
-        print(tualang_)
+        print("tualang>>>>>", tualang_)
         dabong_ = InfoBanjir.query.filter_by(station_name="Sg.Galas di Dabong", time=time, date=date).all()
         kkrai_ = InfoBanjir.query.filter_by(station_name="Sg.Kelantan di Kuala Krai", time=time, date=date).all()
         tualang = float(tualang_.water_level)
