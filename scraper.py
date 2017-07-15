@@ -62,6 +62,7 @@ def forecast():
         time = datetime.datetime.strftime(ctime, time_format)
         date = datetime.datetime.strftime(ctime, date_format)
         tualang_ = InfoBanjir.query.filter_by(station_name="Sg.Lebir di Tualang", time=time, date=date).all()
+        print(tualang_)
         dabong_ = InfoBanjir.query.filter_by(station_name="Sg.Galas di Dabong", time=time, date=date).all()
         kkrai_ = InfoBanjir.query.filter_by(station_name="Sg.Kelantan di Kuala Krai", time=time, date=date).all()
         tualang = float(tualang_.water_level)
@@ -93,6 +94,7 @@ def cleanup():
             db.session.delete(data_)
         db.session.commit()
 
+schedule.every(1).minutes.do(forecast)
 schedule.every(1).hour.do(scrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
