@@ -53,6 +53,7 @@ def scrape():
 
 def forecast():
     with app.app_context():
+        _tualang, _dabong, _kkrai = {}
         db.init_app(app)
         db.create_all()
         time_format = "%H:00"
@@ -61,10 +62,19 @@ def forecast():
         ctime = datetime.datetime.now(tz)
         time = datetime.datetime.strftime(ctime, time_format)
         date = datetime.datetime.strftime(ctime, date_format)
-        tualang_ = InfoBanjir.query.filter_by(station_name="Sg.Lebir di Tualang", time=time, date=date).all()
+        _tualang['station_name'] = "Sg.Lebir di Tualang"
+        _tualang['time'] = time
+        _tualang['date'] = date
+        _dabong['station_name'] = "Sg.Galas di Dabong"
+        _dabong['time'] = time
+        _dabong['date'] = date
+        _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
+        _kkrai['time'] = time
+        _kkrai['date'] = date
+        tualang_ = InfoBanjir.query.filter_by(**_tualang).all()
         print("tualang>>>>>", tualang_)
-        dabong_ = InfoBanjir.query.filter_by(station_name="Sg.Galas di Dabong", time=time, date=date).all()
-        kkrai_ = InfoBanjir.query.filter_by(station_name="Sg.Kelantan di Kuala Krai", time=time, date=date).all()
+        dabong_ = InfoBanjir.query.filter_by(**_dabong).all()
+        kkrai_ = InfoBanjir.query.filter_by(**_kkrai).all()
         tualang = float(tualang_.water_level)
         dabong = float(dabong_.water_level)
         print(tualang)
@@ -94,8 +104,8 @@ def cleanup():
             db.session.delete(data_)
         db.session.commit()
 
-schedule.every(1).minutes.do(forecast)
-schedule.every(1).hour.do(scrape)
+#schedule.every(1).minutes.do(forecast)
+schedule.every(1).minutes.do(scrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
