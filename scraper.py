@@ -53,7 +53,9 @@ def scrape():
 
 def forecast():
     with app.app_context():
-        _tualang, _dabong, _kkrai = {}
+        _tualang = {}
+        _dabong = {}
+        _kkrai = {}
         db.init_app(app)
         db.create_all()
         time_format = "%H:00"
