@@ -14,6 +14,7 @@ class InfoBanjir(db.Model):
     date = db.Column(db.String(255))
     time = db.Column(db.String(255))
     water_level = db.Column(db.String(255))
+    forecasted = db.Column(db.String(255))
 
     def __init__(self, station_name, district, river_basin, date, time, water_level, state, forecasted):
         self.state = state

@@ -69,7 +69,7 @@ def forecast():
         print(tualang)
         print(dabong)
         calculated = 0.895*(math.pow(tualang, 0.490348)*math.pow(dabong, 0.458358))
-        kkrai_.forecasted = calculated
+        kkrai_.forecasted = str(calculated)
         db.session.commit()
         print(kkrai_.forecasted)
 
