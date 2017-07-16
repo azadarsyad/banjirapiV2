@@ -43,7 +43,6 @@ def scrape():
             time = datetime.datetime.strftime(ctime, time_format)
             state = 'Kelantan'
             forecasted = "Null"
-            print("time>>>", time)
             infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, forecasted)
             db.session.add(infobanjir)
             db.session.commit()
@@ -58,42 +57,51 @@ def getWaterLevel(**kwargs):
     for info_ in info_list:
         if info_.time == time:
             water_level = float(info_.water_level)
-    print("water_level>>>>", water_level)
     return water_level
 
 
-def forecast():
+def calculate(tualang_level, dabong_level):
+    forecasted = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
+    return str(forecasted)
+
+
+def setForecasted(**kwargs):
     with app.app_context():
-        _tualang = {}
-        _dabong = {}
-        _kkrai = {}
         db.init_app(app)
         db.create_all()
-        time_format = "%H:00"
-        date_format = "%-d-%-m-%Y"
-        tz = pytz.timezone('Asia/Kuala_Lumpur')
-        ctime = datetime.datetime.now(tz)
-        time = datetime.datetime.strftime(ctime, time_format)
-        date = datetime.datetime.strftime(ctime, date_format)
-        _tualang['station_name'] = "Sg.Lebir di Tualang"
-        _tualang['time'] = time
-        _tualang['date'] = date
-        _dabong['station_name'] = "Sg.Galas di Dabong"
-        _dabong['time'] = time
-        _dabong['date'] = date
-        _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
-        _kkrai['time'] = time
-        _kkrai['date'] = date
-        tualang_level = getWaterLevel(**_tualang)
-        dabong_level = getWaterLevel(**_dabong)
-        print("tualang_level>>>>", tualang_level)
-        print("dabong_level>>>>", dabong_level)
-        forecasted = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
-        kkrai_ = InfoBanjir.query.filter_by(**_kkrai).all()
-        for item_ in kkrai_:
-            item_.forecasted = str(forecasted)
+        node = InfoBanjir.query.filter_by(**kwargs).all()
+        for item_ in node:
+            item_.forecasted = kwargs.get('forecasted', None)
         db.session.commit()
         print(item_.forecasted)
+
+
+def forecast():
+    _tualang = {}
+    _dabong = {}
+    _kkrai = {}
+    time_format = "%H:00"
+    date_format = "%-d-%-m-%Y"
+    tz = pytz.timezone('Asia/Kuala_Lumpur')
+    ctime = datetime.datetime.now(tz)
+    time = datetime.datetime.strftime(ctime, time_format)
+    date = datetime.datetime.strftime(ctime, date_format)
+    _tualang['station_name'] = "Sg.Lebir di Tualang"
+    _tualang['time'] = time
+    _tualang['date'] = date
+    _dabong['station_name'] = "Sg.Galas di Dabong"
+    _dabong['time'] = time
+    _dabong['date'] = date
+    tualang_level = getWaterLevel(**_tualang)
+    dabong_level = getWaterLevel(**_dabong)
+    print("tualang_level>>>>", tualang_level)
+    print("dabong_level>>>>", dabong_level)
+    forecasted = calculate(tualang_level, dabong_level)
+    _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
+    _kkrai['time'] = time
+    _kkrai['date'] = date
+    _kkrai['forecasted'] = forecasted
+    setForecasted(**_kkrai)
 
 
 def scrape2():
@@ -115,8 +123,7 @@ def cleanup():
             db.session.delete(data_)
         db.session.commit()
 
-#schedule.every(1).minutes.do(forecast)
-schedule.every(1).minutes.do(scrape)
+schedule.every(1).hour.do(scrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
