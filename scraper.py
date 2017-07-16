@@ -1,7 +1,6 @@
 from lxml import html
 import requests
 from flask import jsonify, Flask
-from app.models import InfoBanjir
 from apscheduler.schedulers.blocking import BlockingScheduler
 from app import create_app, db
 import datetime
@@ -11,7 +10,7 @@ import pytz
 import schedule
 import time
 import math
-from app.models import InfoBanjir
+from app.models import InfoBanjir, Rainfall
 
 
 create_app().app_context().push()
@@ -48,6 +47,30 @@ def scrape():
             db.session.commit()
 
     forecast()
+
+
+def rfscrape():
+    pageurl = 'http://publicinfobanjir.water.gov.my/View/OnlineFloodInfo/PublicRainFall.aspx?scode=KEL'
+    print("url>>>", pageurl)
+    page = requests.get(pageurl)
+    tree = html.fromstring(page.content)
+    stations = tree.xpath('//span[starts-with(@id, "ContentPlaceHolder1_grdStation_lbl_StationName_")]/text()')
+    districts = tree.xpath('//a[starts-with(@id, "ContentPlaceHolder1_grdStation_lbl_District_")]/text()')
+    rainfalls = tree.xpath('//span[starts-with(@id, "ContentPlaceHolder1_grdStation_Label4_")]/text()')
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+        for station_name, district, rainfall in zip(stations, districts, rainfalls):
+            date_format = "%-d-%-m-%Y"
+            time_format = "%H:00"
+            tz = pytz.timezone('Asia/Kuala_Lumpur')
+            ctime = datetime.datetime.now(tz)
+            date = datetime.datetime.strftime(ctime, date_format)
+            time = datetime.datetime.strftime(ctime, time_format)
+            forecasted = "Null"
+            rainfall = Rainfall(station_name, district, date, time, rainfall, forecasted)
+            db.session.add(rainfall)
+            db.session.commit()
 
 
 def getWaterLevel(**kwargs):
@@ -124,6 +147,7 @@ def cleanup():
         db.session.commit()
 
 schedule.every(1).hour.do(scrape)
+schedule.every(1).minutes.do(rfscrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)

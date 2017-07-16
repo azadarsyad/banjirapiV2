@@ -19,7 +19,7 @@ POSTGRES = {
 
 
 def create_app():
-    from app.models import InfoBanjir
+    from app.models import InfoBanjir, Rainfall
     app = Flask(__name__)
     CORS(app)
     app.config['DEBUG'] = True
@@ -64,6 +64,40 @@ def create_app():
                  'date': info_.date,
                  'time': info_.time,
                  'water_level': info_.water_level,
+                 'forecasted': info_.forecasted,
+                }
+                results.append(obj.copy())
+        response = jsonify(results)
+        return response
+
+    @app.route('/Rainfall', methods=['GET'])
+    def rainfall():
+        results = None
+        querystring = {}
+        if bool(request.args):
+            querystring = request.args.to_dict(flat=True)
+            rainfalls_ = Rainfall.query.filter_by(**querystring).all()
+            results = []
+            for info_ in rainfalls_:
+                obj = {
+                 'station_name': info_.station_name,
+                 'district': info_.district,
+                 'date': info_.date,
+                 'time': info_.time,
+                 'rainfall': info_.rainfall,
+                 'forecasted': info_.forecasted,
+                }
+                results.append(obj.copy())
+        else:
+            rainfalls_ = Rainfall.get_all()
+            results = []
+            for info_ in rainfalls_:
+                obj = {
+                 'station_name': info_.station_name,
+                 'district': info_.district,
+                 'date': info_.date,
+                 'time': info_.time,
+                 'rainfall': info_.rainfall,
                  'forecasted': info_.forecasted,
                 }
                 results.append(obj.copy())
