@@ -51,26 +51,15 @@ def scrape():
     forecast()
 
 
-def getDabong(**kwargs):
-    dabong_level = None
+def getWaterLevel(**kwargs):
+    water_level = None
     time = kwargs.get('time', None)
-    dabong_list = InfoBanjir.query.filter_by(**kwargs).all()
-    for info_ in dabong_list:
+    info_list = InfoBanjir.query.filter_by(**kwargs).all()
+    for info_ in info_list:
         if info_.time == time:
-            dabong_level = float(info_.water_level)
-    print("dabong_level>>>>", dabong_level)
-    return dabong_level
-
-
-def getTualang(**kwargs):
-    tualang_level = None
-    time = kwargs.get('time', None)
-    tualang_list = InfoBanjir.query.filter_by(**kwargs).all()
-    for info_ in tualang_list:
-        if info_.time == time:
-            tualang_level = float(info_.water_level)
-    print("tualang_level>>>>", tualang_level)
-    return tualang_level
+            water_level = float(info_.water_level)
+    print("water_level>>>>", water_level)
+    return water_level
 
 
 def forecast():
@@ -95,14 +84,14 @@ def forecast():
         _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
         _kkrai['time'] = time
         _kkrai['date'] = date
-        tualang_level = getTualang(**_tualang)
-        dabong_level = getDabong(**_dabong)
+        tualang_level = getWaterLevel(**_tualang)
+        dabong_level = getWaterLevel(**_dabong)
         print("tualang_level>>>>", tualang_level)
         print("dabong_level>>>>", dabong_level)
-        calculated = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
+        forecasted = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
         kkrai_ = InfoBanjir.query.filter_by(**_kkrai).all()
         for item_ in kkrai_:
-            item_.forecasted = str(calculated)
+            item_.forecasted = str(forecasted)
         db.session.commit()
         print(item_.forecasted)
 
