@@ -56,6 +56,8 @@ def forecast():
         _tualang = {}
         _dabong = {}
         _kkrai = {}
+        tualang_level = None
+        dabong_level = None
         db.init_app(app)
         db.create_all()
         time_format = "%H:00"
@@ -73,18 +75,35 @@ def forecast():
         _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
         _kkrai['time'] = time
         _kkrai['date'] = date
-        tualang_ = InfoBanjir.query.filter_by(**_tualang).all()
-        print("tualang>>>>>", tualang_)
-        dabong_ = InfoBanjir.query.filter_by(**_dabong).all()
+        tualang_list = InfoBanjir.query.filter_by(**_tualang).all()
+        for data_ in tualang_list:
+            obj = {
+                 'state': data_.state,
+                 'station_name': data_.station_name,
+                 'district': data_.district,
+                 'river_basin': data_.river_basin,
+                 'date': data_.date,
+                 'time': data_.time,
+                 'water_level': data_.water_level,
+                 'forecasted': data_.forecasted,
+                }
+            print("obj>>>", obj)
+            if data_.time == _tualang['time']:
+                tualang_level = float(data_.water_level)
+
+        dabong_list = InfoBanjir.query.filter_by(**_dabong).all()
+        for info_ in dabong_list:
+            if info_.time == _tualang['time']:
+                dabong_level = float(info_.water_level)
+
+        print("tualang_level>>>>", tualang_level)
+        print("dabong_level>>>>", dabong_level)
+        calculated = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
         kkrai_ = InfoBanjir.query.filter_by(**_kkrai).all()
-        tualang = float(tualang_.water_level)
-        dabong = float(dabong_.water_level)
-        print(tualang)
-        print(dabong)
-        calculated = 0.895*(math.pow(tualang, 0.490348)*math.pow(dabong, 0.458358))
-        kkrai_.forecasted = str(calculated)
+        for item_ in kkrai_:
+            item_.forecasted = str(calculated)
         db.session.commit()
-        print(kkrai_.forecasted)
+        print(item_.forecasted)
 
 
 def scrape2():
