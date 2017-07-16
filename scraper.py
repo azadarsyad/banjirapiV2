@@ -65,14 +65,14 @@ def calculate(tualang_level, dabong_level):
     return str(forecasted)
 
 
-def setForecasted(**kwargs):
+def setForecasted(forecasted, **kwargs):
     with app.app_context():
         db.init_app(app)
         db.create_all()
         node = InfoBanjir.query.filter_by(**kwargs).all()
         for item_ in node:
-            item_.forecasted = kwargs.get('forecasted', None)
-            print(item_.forecasted)
+            item_.forecasted = forecasted
+            print("finally>>>", item_.forecasted)
         db.session.commit()
 
 
@@ -101,8 +101,7 @@ def forecast():
     _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
     _kkrai['time'] = time
     _kkrai['date'] = date
-    _kkrai['forecasted'] = forecasted
-    setForecasted(**_kkrai)
+    setForecasted(forecasted, **_kkrai)
 
 
 def scrape2():
