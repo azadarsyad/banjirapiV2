@@ -72,8 +72,8 @@ def setForecasted(**kwargs):
         node = InfoBanjir.query.filter_by(**kwargs).all()
         for item_ in node:
             item_.forecasted = kwargs.get('forecasted', None)
-        db.session.commit()
-        print(item_.forecasted)
+            print(item_.forecasted)
+            db.session.commit()
 
 
 def forecast():
@@ -123,7 +123,7 @@ def cleanup():
             db.session.delete(data_)
         db.session.commit()
 
-schedule.every(1).hour.do(scrape)
+schedule.every(1).minutes.do(scrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
