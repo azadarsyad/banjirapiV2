@@ -53,27 +53,23 @@ def scrape():
 
 def getDabong(**kwargs):
     dabong_level = None
-    with app.app_context():
-        db.init_app(app)
-        time = kwargs.get('time', None)
-        dabong_list = InfoBanjir.query.filter_by(**kwargs).all()
-        for info_ in dabong_list:
-            if info_.time == time:
-                dabong_level = float(info_.water_level)
+    time = kwargs.get('time', None)
+    dabong_list = InfoBanjir.query.filter_by(**kwargs).all()
+    for info_ in dabong_list:
+        if info_.time == time:
+            dabong_level = float(info_.water_level)
     print("dabong_level>>>>", dabong_level)
     return dabong_level
 
 
 def getTualang(**kwargs):
     tualang_level = None
-    with app.app_context():
-        db.init_app(app)
-        time = kwargs.get('time', None)
-        tualang_list = InfoBanjir.query.filter_by(**kwargs).all()
-        for info_ in tualang_list:
-            if info_.time == time:
-                tualang_level = float(info_.water_level)
-    print("dabong_level>>>>", tualang_level)
+    time = kwargs.get('time', None)
+    tualang_list = InfoBanjir.query.filter_by(**kwargs).all()
+    for info_ in tualang_list:
+        if info_.time == time:
+            tualang_level = float(info_.water_level)
+    print("tualang_level>>>>", tualang_level)
     return tualang_level
 
 
