@@ -45,7 +45,7 @@ class InfoBanjir(db.Model):
 class Rainfall(db.Model):
     """This class represents the bucketlist table."""
 
-    __tablename__ = 'waterlevel_'
+    __tablename__ = 'rainfall_'
 
     id = db.Column(db.Integer, primary_key=True)
     station_name = db.Column(db.String(255))

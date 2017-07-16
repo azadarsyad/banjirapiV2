@@ -68,8 +68,11 @@ def rfscrape():
             date = datetime.datetime.strftime(ctime, date_format)
             time = datetime.datetime.strftime(ctime, time_format)
             forecasted = "Null"
-            rainfall = Rainfall(station_name, district, date, time, rainfall, forecasted)
-            db.session.add(rainfall)
+            print("station_name>>>", station_name)
+            print("district>>>", district)
+            print("rainfall>>>", rainfall)
+            rainfalls = Rainfall(station_name, district, date, time, rainfall, forecasted)
+            db.session.add(rainfalls)
             db.session.commit()
 
 
