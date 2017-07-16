@@ -62,7 +62,7 @@ def getWaterLevel(**kwargs):
 
 def calculate(tualang_level, dabong_level):
     forecasted = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
-    return str(forecasted)
+    return str(round(forecasted, 2))
 
 
 def setForecasted(forecasted, **kwargs):
@@ -123,7 +123,7 @@ def cleanup():
             db.session.delete(data_)
         db.session.commit()
 
-schedule.every(1).hour.do(scrape)
+schedule.every(1).minutes.do(scrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
