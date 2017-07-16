@@ -51,13 +51,37 @@ def scrape():
     forecast()
 
 
+def getDabong(**kwargs):
+    dabong_level = None
+    with app.app_context():
+        db.init_app(app)
+        time = kwargs.get('time', None)
+        dabong_list = InfoBanjir.query.filter_by(**kwargs).all()
+        for info_ in dabong_list:
+            if info_.time == time:
+                dabong_level = float(info_.water_level)
+    print("dabong_level>>>>", dabong_level)
+    return dabong_level
+
+
+def getTualang(**kwargs):
+    tualang_level = None
+    with app.app_context():
+        db.init_app(app)
+        time = kwargs.get('time', None)
+        tualang_list = InfoBanjir.query.filter_by(**kwargs).all()
+        for info_ in tualang_list:
+            if info_.time == time:
+                tualang_level = float(info_.water_level)
+    print("dabong_level>>>>", tualang_level)
+    return tualang_level
+
+
 def forecast():
     with app.app_context():
         _tualang = {}
         _dabong = {}
         _kkrai = {}
-        tualang_level = None
-        dabong_level = None
         db.init_app(app)
         db.create_all()
         time_format = "%H:00"
@@ -75,27 +99,8 @@ def forecast():
         _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
         _kkrai['time'] = time
         _kkrai['date'] = date
-        tualang_list = InfoBanjir.query.filter_by(**_tualang).all()
-        for data_ in tualang_list:
-            obj = {
-                 'state': data_.state,
-                 'station_name': data_.station_name,
-                 'district': data_.district,
-                 'river_basin': data_.river_basin,
-                 'date': data_.date,
-                 'time': data_.time,
-                 'water_level': data_.water_level,
-                 'forecasted': data_.forecasted,
-                }
-            print("obj>>>", obj)
-            if data_.time == _tualang['time']:
-                tualang_level = float(data_.water_level)
-
-        dabong_list = InfoBanjir.query.filter_by(**_dabong).all()
-        for info_ in dabong_list:
-            if info_.time == _tualang['time']:
-                dabong_level = float(info_.water_level)
-
+        tualang_level = getTualang(**_tualang)
+        dabong_level = getDabong(**_dabong)
         print("tualang_level>>>>", tualang_level)
         print("dabong_level>>>>", dabong_level)
         calculated = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
