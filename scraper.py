@@ -73,7 +73,7 @@ def setForecasted(**kwargs):
         for item_ in node:
             item_.forecasted = kwargs.get('forecasted', None)
             print(item_.forecasted)
-            db.session.commit()
+        db.session.commit()
 
 
 def forecast():
@@ -97,6 +97,7 @@ def forecast():
     print("tualang_level>>>>", tualang_level)
     print("dabong_level>>>>", dabong_level)
     forecasted = calculate(tualang_level, dabong_level)
+    print("forecasted>>>", forecasted)
     _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
     _kkrai['time'] = time
     _kkrai['date'] = date
