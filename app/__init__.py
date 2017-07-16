@@ -69,6 +69,7 @@ def create_app():
                 results.append(obj.copy())
         response = jsonify(results)
         return response
+    return app
 
     @app.route('/Rainfall', methods=['GET'])
     def rainfall():
