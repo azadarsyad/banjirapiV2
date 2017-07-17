@@ -147,10 +147,13 @@ def cleanup():
         datas_ = InfoBanjir.get_all()
         for data_ in datas_:
             db.session.delete(data_)
+        rainfalls_ = Rainfall.get_all()
+        for info_ in rainfalls_:
+            db.session.delete(info_)
         db.session.commit()
 
 schedule.every(1).hour.do(scrape)
-schedule.every(1).minutes.do(rfscrape)
+schedule.every(1).hour.do(rfscrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
