@@ -72,7 +72,7 @@ class Rainfall(db.Model):
 
     @staticmethod
     def get_all():
-        return InfoBanjir.query.all()
+        return Rainfall.query.all()
         
     def delete(self):
         db.session.delete(self)
