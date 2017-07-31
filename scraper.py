@@ -114,7 +114,8 @@ def calculate(formula, **kwargs):
     expr = sy.sympify(formulaStr)
     result = expr.subs(kwargs)
     print("type>>>>", type(result))
-    return str(round(result, 2))
+    print("result>>>", result)
+    return str(round(float(result), 2))
 
 
 def setForecasted(category, forecasted, **kwargs):
