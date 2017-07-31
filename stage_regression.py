@@ -22,7 +22,7 @@ dabong = {
 
 kkrai = {
     'station_name': "Sg.Kelantan di Kuala Krai",
-    'formula': "0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))",
+    'formula': "0.895*(tualang_level**0.490348)*(dabong_level**0.458358))",
     'time': time,
     'date': date,
 }
@@ -30,7 +30,7 @@ kkrai = {
 guillemard = {
     'input_station': "Sg.Kelantan di Kuala Krai",
     'station_name': "Sg.Kelantan di Kusial",
-    'formula': "0.395043*(math.pow(kkrai_level, 1.163935))",
+    'formula': "0.395043*(kkrai_level**1.163935))",
     'time': time,
     'date': date,
 }
@@ -38,7 +38,7 @@ guillemard = {
 jeti_kastam = {
     'input_station': "Sg.Kelantan di Kusial",
     'station_name': "Sg.Kelantan di Jeti Kastam",
-    'formula': "0.01874*(math.pow(kusial_level, 1.969169))",
+    'formula': "0.01874*(kusial_level**1.969169))",
     'time': time,
     'date': date,
 }
