@@ -23,7 +23,7 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
     app.config['DEBUG'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://waylzqfmzttlmq:d971e277769b36bbf05866a1e50da1ff56985069f0ef51c0b4ac135cc12fdf6f@ec2-107-21-109-15.compute-1.amazonaws.com:5432/d1oopiqno457ls"
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://vqkapnismegpcz:c999b29e88ba74f351684ae8124c0844e756fb25c504f3961080034454e9b573@ec2-23-21-96-159.compute-1.amazonaws.com:5432/dtpvt79jtlf1n'
     db.init_app(app)
 
     @app.route('/')
