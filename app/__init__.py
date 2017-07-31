@@ -48,7 +48,8 @@ def create_app():
                  'date': info_.date,
                  'time': info_.time,
                  'water_level': info_.water_level,
-                 'forecasted': info_.forecasted,
+                 'stage_forecast': info_.stage_forecast,
+                 'rainfall_forecast': info_.rainfall_forecast,
                 }
                 results.append(obj.copy())
         else:
@@ -64,7 +65,8 @@ def create_app():
                  'date': info_.date,
                  'time': info_.time,
                  'water_level': info_.water_level,
-                 'forecasted': info_.forecasted,
+                 'stage_forecast': info_.stage_forecast,
+                 'rainfall_forecast': info_.rainfall_forecast,
                 }
                 results.append(obj.copy())
         response = jsonify(results)

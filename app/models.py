@@ -14,9 +14,10 @@ class InfoBanjir(db.Model):
     date = db.Column(db.String(255))
     time = db.Column(db.String(255))
     water_level = db.Column(db.String(255))
-    forecasted = db.Column(db.String(255))
+    stage_forecast = db.Column(db.String(255))
+    rainfall_forecast = db.Column(db.String(255))
 
-    def __init__(self, station_name, district, river_basin, date, time, water_level, state, forecasted):
+    def __init__(self, station_name, district, river_basin, date, time, water_level, state, stage_forecast, rainfall_forecast):
         self.state = state
         self.station_name = station_name
         self.district = district
@@ -24,7 +25,8 @@ class InfoBanjir(db.Model):
         self.date = date
         self.time = time
         self.water_level = water_level
-        self.forecasted = forecasted
+        self.stage_forecast = stage_forecast
+        self.rainfall_forecast = rainfall_forecast
 
     def __repr__(self):
         return "<InfoBanjir: {}>".format(self.state)

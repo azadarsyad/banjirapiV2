@@ -11,6 +11,9 @@ import schedule
 import time
 import math
 from app.models import InfoBanjir, Rainfall
+from stage_regression import tualang, dabong, kkrai, guillemard, jeti_kastam
+import sympy as sy
+from rainfall_correlation import lebir, kuala_krai, kusial
 
 
 create_app().app_context().push()
@@ -41,12 +44,13 @@ def scrape():
             date = datetime.datetime.strftime(last_update, date_format)
             time = datetime.datetime.strftime(ctime, time_format)
             state = 'Kelantan'
-            forecasted = "Null"
+            stage_forecast = "Null"
+            rainfall_forecast = "Null"
             infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, forecasted)
             db.session.add(infobanjir)
             db.session.commit()
 
-    forecast()
+    stage_regression()
 
 
 def rfscrape():
@@ -71,63 +75,84 @@ def rfscrape():
             print("station_name>>>", station_name)
             print("district>>>", district)
             print("rainfall>>>", rainfall)
+            if rainfall == '-9999':
+                rainfall = '0'
             rainfalls = Rainfall(station_name, district, date, time, rainfall, forecasted)
             db.session.add(rainfalls)
             db.session.commit()
+
+    rainfall_correlation()
 
 
 def getWaterLevel(**kwargs):
     water_level = None
     time = kwargs.get('time', None)
-    info_list = InfoBanjir.query.filter_by(**kwargs).all()
+    input_station = kwargs.get('input_station', None)
+    info_list = InfoBanjir.query.filter_by(station_name=input_station).all()
     for info_ in info_list:
         if info_.time == time:
             water_level = float(info_.water_level)
     return water_level
 
 
-def calculate(tualang_level, dabong_level):
-    forecasted = 0.895*(math.pow(tualang_level, 0.490348)*math.pow(dabong_level, 0.458358))
-    return str(round(forecasted, 2))
+def getRainfall(**kwargs):
+    rainfalls = {}
+    time = kwargs.get('time', None)
+    input_stations = kwargs.get('input_station', None)
+    if isinstance(input_stations, list):
+        for station in input_stations:
+            info_list = Rainfall.query.filter_by(station_name=station).all()
+            for info_ in info_list:
+                if info_.time == time:
+                    rainfalls[station] = float(info_.rainfall)
+    print("rainfalls>>>", rainfalls)
+    return rainfalls
 
 
-def setForecasted(forecasted, **kwargs):
+def calculate(formula, **kwargs):
+    formulaStr = formula
+    expr = sy.sympify(formulaStr)
+    result = expr.subs(kwargs)
+    return str(round(result, 2))
+
+
+def setForecasted(category, forecasted, **kwargs):
     with app.app_context():
         db.init_app(app)
         db.create_all()
-        node = InfoBanjir.query.filter_by(**kwargs).all()
+        station_name = kwargs.get('station_name', None)
+        node = InfoBanjir.query.filter_by(station_name=station_name).all()
         for item_ in node:
-            item_.forecasted = forecasted
-            print("finally>>>", item_.forecasted)
+            if category == 'stage':
+                item_.stage_forecast = forecasted
+            elif category == 'rainfall':
+                item_.rainfall_forecast = forecasted
         db.session.commit()
 
 
-def forecast():
-    _tualang = {}
-    _dabong = {}
-    _kkrai = {}
-    time_format = "%H:00"
-    date_format = "%-d-%-m-%Y"
-    tz = pytz.timezone('Asia/Kuala_Lumpur')
-    ctime = datetime.datetime.now(tz)
-    time = datetime.datetime.strftime(ctime, time_format)
-    date = datetime.datetime.strftime(ctime, date_format)
-    _tualang['station_name'] = "Sg.Lebir di Tualang"
-    _tualang['time'] = time
-    _tualang['date'] = date
-    _dabong['station_name'] = "Sg.Galas di Dabong"
-    _dabong['time'] = time
-    _dabong['date'] = date
-    tualang_level = getWaterLevel(**_tualang)
-    dabong_level = getWaterLevel(**_dabong)
-    print("tualang_level>>>>", tualang_level)
-    print("dabong_level>>>>", dabong_level)
-    forecasted = calculate(tualang_level, dabong_level)
-    print("forecasted>>>", forecasted)
-    _kkrai['station_name'] = "Sg.Kelantan di Kuala Krai"
-    _kkrai['time'] = time
-    _kkrai['date'] = date
-    setForecasted(forecasted, **_kkrai)
+def stage_regression():
+    tualang_level = getWaterLevel(**tualang)
+    dabong_level = getWaterLevel(**dabong)
+    kkrai_level = getWaterLevel(**guillemard)
+    kusial_level = getWaterLevel(**jeti_kastam)
+    kkrai_forecast = calculate(kkrai['formula'], tualang_level=tualang_level, dabong_level=dabong_level)
+    guillemard_forecast = calculate(guillemard['formula'], kkrai_level=kkrai_level)
+    jeti_forecast = calculate(jeti_kastam['formula'], kusial_level=kusial_level)
+    setForecasted('stage', kkrai_forecast, **kkrai)
+    setForecasted('stage', guillemard_forecast, **guillemard)
+    setForecasted('stage', jeti_forecast, **jeti_kastam)
+
+
+def rainfall_correlation():
+    lebir_rainfalls = getRainfall(**lebir)
+    lebir_forecast = calculate(lebir['formula'], **lebir_rainfalls)
+    setForecasted('rainfall', lebir_forecast, **lebir)
+    kuala_rainfalls = getRainfall(**kuala_krai)
+    kuala_forecast = calculate(kuala_krai['formula'], **kuala_rainfalls)
+    setForecasted('rainfall', kuala_forecast, **kuala_krai)
+    kusial_rainfalls = getRainfall(**kusial)
+    kusial_forecast = calculate(kusial['formula'], **kusial_rainfalls)
+    setForecasted('rainfall', kusial_forecast, **kusial)
 
 
 def scrape2():
@@ -152,8 +177,8 @@ def cleanup():
             db.session.delete(info_)
         db.session.commit()
 
-schedule.every(1).hour.do(scrape)
-schedule.every(1).hour.do(rfscrape)
+schedule.every(1).minutes.do(scrape)
+schedule.every(1).minutes.do(rfscrape)
 schedule.every(15).minutes.do(pingreq)
 #schedule.every().day.at("00:00").do(scrape2)
 schedule.every().sunday.at("23:59").do(cleanup)
