@@ -106,7 +106,7 @@ def getRainfall(**kwargs):
                 info_list = Rainfall.query.filter_by(station_name=station).all()
                 for info_ in info_list:
                     if info_.time == time:
-                        rainfalls[station_var] = info_.rainfall
+                        rainfalls[station_var] = int(info_.rainfall)
     print("rainfalls>>>", rainfalls)
     return rainfalls
 
@@ -180,6 +180,7 @@ def cleanup():
         for info_ in rainfalls_:
             db.session.delete(info_)
         db.session.commit()
+
 
 schedule.every(1).minutes.do(scrape)
 schedule.every(1).minutes.do(rfscrape)
