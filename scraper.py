@@ -99,12 +99,14 @@ def getRainfall(**kwargs):
     rainfalls = {}
     time = kwargs.get('time', None)
     input_stations = kwargs.get('input_station', None)
+    station_vars = kwargs.get('station_var', None)
     if isinstance(input_stations, list):
-        for station in input_stations:
-            info_list = Rainfall.query.filter_by(station_name=station).all()
-            for info_ in info_list:
-                if info_.time == time:
-                    rainfalls[station] = float(info_.rainfall)
+        for station_var in station_vars:
+            for station in input_stations:
+                info_list = Rainfall.query.filter_by(station_name=station).all()
+                for info_ in info_list:
+                    if info_.time == time:
+                        rainfalls[station_var] = info_.rainfall
     print("rainfalls>>>", rainfalls)
     return rainfalls
 
