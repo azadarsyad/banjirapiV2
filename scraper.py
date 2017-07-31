@@ -46,7 +46,7 @@ def scrape():
             state = 'Kelantan'
             stage_forecast = "Null"
             rainfall_forecast = "Null"
-            infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, forecasted)
+            infobanjir = InfoBanjir(station_name, district, river_basin, date, time, water_level, state, stage_forecast, rainfall_forecast)
             db.session.add(infobanjir)
             db.session.commit()
 
