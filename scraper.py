@@ -113,6 +113,7 @@ def calculate(formula, **kwargs):
     formulaStr = formula
     expr = sy.sympify(formulaStr)
     result = expr.subs(kwargs)
+    print("type>>>>", type(result))
     return str(round(result, 2))
 
 
