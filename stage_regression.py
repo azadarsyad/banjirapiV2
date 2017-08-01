@@ -2,7 +2,7 @@ import datetime
 import pytz
 
 time_format = "%H:00"
-date_format = "%-d-%-m-%Y"
+date_format = "%-d/%-m/%Y"
 tz = pytz.timezone('Asia/Kuala_Lumpur')
 ctime = datetime.datetime.now(tz)
 time = datetime.datetime.strftime(ctime, time_format)
