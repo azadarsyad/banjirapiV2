@@ -19,7 +19,7 @@ from rainfall_correlation import lebir, kuala_krai, kusial
 create_app().app_context().push()
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://vqkapnismegpcz:c999b29e88ba74f351684ae8124c0844e756fb25c504f3961080034454e9b573@ec2-23-21-96-159.compute-1.amazonaws.com:5432/dtpvt79jtlf1n'
+app.config['SQLALCHEMY_DATABASE_URI'] = ''
 
 
 def scrape():
