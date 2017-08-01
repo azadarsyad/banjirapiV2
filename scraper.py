@@ -36,7 +36,7 @@ def scrape():
         db.init_app(app)
         db.create_all()
         for station_name, district, river_basin, last_update, water_level in zip(stations, districts, basins, last_updates, water_levels):
-            date_format = "%-d/%-m/%Y"
+            date_format = "%-m/%-d/%Y"
             time_format = "%H:00"
             last_update = dateutil.parser.parse(last_update)
             tz = pytz.timezone('Asia/Kuala_Lumpur')
@@ -65,7 +65,7 @@ def rfscrape():
         db.init_app(app)
         db.create_all()
         for station_name, district, rainfall in zip(stations, districts, rainfalls):
-            date_format = "%-d/%-m/%Y"
+            date_format = "%-m/%-d/%Y"
             time_format = "%H:00"
             tz = pytz.timezone('Asia/Kuala_Lumpur')
             ctime = datetime.datetime.now(tz)
